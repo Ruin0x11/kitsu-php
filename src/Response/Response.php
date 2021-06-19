@@ -24,12 +24,12 @@ class Response
     {
         $result = json_decode($this->response->getBody());
 
-        if ($result->data->id) {
+        if (!is_array($result->data)) {
             return json_decode(json_encode([$result->data]), $assoc);
         }
 
-        if ($result->meta->count <= 0) {
-            throw new BadResponseException('No results where found.', 404);
+        if (property_exists($result, "meta") && $result->meta->count <= 0) {
+            return json_decode(json_encode([]), $assoc);
         }
 
         return json_decode(json_encode($result->data), $assoc);
